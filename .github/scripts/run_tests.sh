@@ -12,4 +12,4 @@ scheme="ListInserter"
 # simulator_os="14.0"
 
 # xcodebuild test -scheme ListInserter -destination 'platform=iOS Simulator,id=1BFAB756-39B6-4D1D-8980-71843A3639B0' -sdk 'iOS 17.0'
-xcodebuild test -scheme "$scheme" -destination 'platform=iOS Simulator,id="$iphone_device_id"' -sdk 'iOS 17.0'
+xcodebuild test -scheme "$scheme" -destination 'platform=iOS Simulator,id="$iphone_device_id"' -sdk 'iphonesimulator'
