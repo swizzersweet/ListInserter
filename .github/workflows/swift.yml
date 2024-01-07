@@ -19,8 +19,8 @@ jobs:
     - name: Run script file
       run: |
        pwd
-       chmod +x ./run_tests.sh
-       ./run_tests.sh
+       chmod +x ./.github/scripts/run_tests.sh
+       ./.github/scripts/run_tests.sh
       shell: bash
     # - name: Build
     #   run: swift build -v
