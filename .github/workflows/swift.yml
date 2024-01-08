@@ -23,7 +23,7 @@ jobs:
       id: launch_simulator
       with:
         model: 'iPhone 8'
-        # os: 'iOS'
+        os: 'iOS'
         # os_version: '>=14.0'
     - name: Output simulator udid
       run: echo "Simulator UDID is ${{ steps.launch_simulator.outputs.udid }}"
