@@ -22,7 +22,7 @@ jobs:
     - uses: futureware-tech/simulator-action@v3
       id: launch_simulator
       with:
-        model: 'iPhone 14'
+        # model: 'iPhone 14'
         os: 'iOS'
         # os_version: '>=14.0'
     - name: Output simulator udid
