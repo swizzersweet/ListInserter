@@ -28,11 +28,13 @@ jobs:
     - name: Output simulator udid
       run: echo "Simulator UDID is ${{ steps.launch_simulator.outputs.udid }}"
     - name: Run tests
-      run: |
-       pwd
-       chmod +x ./.github/scripts/run_tests.sh
-       ./.github/scripts/run_tests.sh
-      shell: bash
+      run: xcodebuild test -scheme ListInserter -destination "platform=iOS Simulator,id=${{ steps.launch_simulator.outputs.udid }}" -sdk 'iphonesimulator'
+    # - name: Run tests
+    #   run: |
+    #    pwd
+    #    chmod +x ./.github/scripts/run_tests.sh
+    #    ./.github/scripts/run_tests.sh
+    #   shell: bash
     # - name: Build
     #   run: swift build -v
     # - name: Run tests
