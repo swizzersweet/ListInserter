@@ -2,6 +2,8 @@
 
 # output=$(xcrun simctl list devices available)
 
+echo "udid is: $udid"
+
 iphone_device_id=$(xctrace list  devices | grep -m 1 "iPhone 12" | awk '{print substr($0,length($0)-36,36)}')
 
 echo $iphone_device_id
