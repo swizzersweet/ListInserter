@@ -4,10 +4,9 @@
 
 # What is it?
 
-ListInserter facilitates inserting items into a sectioned or non-sectioned list of items. It is compatible with SwiftUI and UIKit, and is agnostic to any architecture.
+ListInserter facilitates inserting items into a sectioned or non-sectioned list of items. Although designed with SwiftUI and UIKit via diffable data sources in mind, it can insert any type in a list.
 
 It is fairly typical for apps to have a list of data they receive from an API endpoint, or a data source such as CoreData. If we then have the requirement that we would like to decorate the existing items with new items, this can involve some tedious boilerplate code that involves ensuring items remain in bounds, adding custom view types for SwiftUI or UIKit, and specific logic for to prevent inserted items from jumping when items are deleted. What we really want, is to be able to describe how we want to insert an item, and for something else to handle that boilerplate. Enter ListInserter.
-
 
 ## Use case
 
@@ -67,11 +66,13 @@ let inserterItems = bookItems.map { .value($0) }
 Which then allows us to apply insertions with a ListInserter (using a NoSections type):
 
 ```swift
-typealias MyInserter = Inserter<NoSections, BookItem>
+struct PromotionalView: View { ...code... }
+
+typealias MyInserter = Inserter<NoSections, BookItem, PromotionalView>
 
 let injectThreeFromTop = TestInserter.InsertionRequest(
     requestType: .index(
-        .init(view: AnyView(EmptyView()),
+        .init(embed: PromotionalView(),
             position: .top(3))))
 
 let listInserter = MyInserter(itemInsertionRequests: [injectThreeFromTop])

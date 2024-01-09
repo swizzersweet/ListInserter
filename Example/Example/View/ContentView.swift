@@ -21,7 +21,7 @@ struct ContentView: View {
                                 .navigationTitle("List - Without Sections"))
                         }
                     }
-                    
+                    /*
                     Section(header: Text("UIKit")) {
                         NavigationLink("UITableView - With Injector") {
                             NavigationLazyView(Text("stub with injector TODO")
@@ -33,6 +33,7 @@ struct ContentView: View {
                                 .navigationTitle("UICollectionView - With Injector"))
                         }
                     }
+                     */
                 }
             }
             .navigationTitle("Examples")

@@ -3,18 +3,21 @@ import SwiftUI
 public typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
 
 /// Used to insert items in sectioned data provided requests which describe what to insert, and where to insert the item.
-public class Inserter<SectionIdentifier, Value>
+public class Inserter<SectionIdentifier, Value, Embed>
     where
     SectionIdentifier: Hashable,
     Value: Hashable,
     Value: ItemKindIdentifiable
 {
+    public typealias SectionType = Section<SectionIdentifier, Value, Embed>
+    public typealias ItemType = Item<Value, Embed>
+    
     private var previousSectionHashes: [SectionHash]?
     private let insertionRequests: [InsertionRequest]
     private let shouldInsertItems: () -> Bool
 
-    private var indexItemBuilderCache = [InsertionRequestIndex: Item<Value>]()
-    private var pinItemBuilderCache = [InsertionRequestPinToItem: Item<Value>]()
+    private var indexItemBuilderCache = [InsertionRequestIndex: ItemType]()
+    private var pinItemBuilderCache = [InsertionRequestPinToItem: ItemType]()
     private var itemInfoIdGenerator: () -> String
 
     public init(
@@ -39,15 +42,15 @@ public class Inserter<SectionIdentifier, Value>
         self.itemInfoIdGenerator = itemInfoIdGenerator
     }
 
-    public func insert(into newItems: [Item<Value>]) -> [Item<Value>]
+    public func insert(into newItems: [ItemType]) -> [ItemType]
         where SectionIdentifier == NoSections
     {
-        let section = Section<SectionIdentifier, Value>(id: NoSections(), items: newItems)
+        let section = SectionType(id: NoSections(), items: newItems)
         let insertedSections = insert(into: [section])
         return insertedSections[0].items
     }
 
-    public func insert(into newSections: [Section<SectionIdentifier, Value>]) -> [Section<SectionIdentifier, Value>] {
+    public func insert(into newSections: [SectionType]) -> [SectionType] {
         guard shouldInsertItems() else {
             return newSections
                 .map { section in
@@ -97,7 +100,7 @@ public class Inserter<SectionIdentifier, Value>
         return mutatedItems
     }
     
-    private func removeItemFromInsertion(insertionRequest: InsertionRequest, sections: [Section<SectionIdentifier, Value>]) -> [Section<SectionIdentifier, Value>] {
+    private func removeItemFromInsertion(insertionRequest: InsertionRequest, sections: [SectionType]) -> [SectionType] {
         var sections = sections
         
         let item = {
@@ -119,7 +122,7 @@ public class Inserter<SectionIdentifier, Value>
         return sections
     }
     
-    private func insertedItemExistsInSection(insertionRequest: InsertionRequest, sections: [Section<SectionIdentifier, Value>]) -> Bool {
+    private func insertedItemExistsInSection(insertionRequest: InsertionRequest, sections: [SectionType]) -> Bool {
         let item = {
             switch insertionRequest.requestType {
             case let .index(insertionRequestIndex):
@@ -129,14 +132,14 @@ public class Inserter<SectionIdentifier, Value>
             }
         }()
         
-        guard let item, let indexOfItem = indexPathOf(item: item, sections: sections) else {
+        guard let item, let _ = indexPathOf(item: item, sections: sections) else {
             return false
         }
         
         return true
     }
     
-    private func indexPathOf(item: Item<Value>, sections: [Section<SectionIdentifier, Value>]) -> IndexPath? {
+    private func indexPathOf(item: ItemType, sections: [SectionType]) -> IndexPath? {
         for (sectionIndex, sectionValue) in sections.enumerated() {
             for (itemIndex, itemValue) in sectionValue.items.enumerated() {
                 if itemValue == item {
@@ -148,15 +151,15 @@ public class Inserter<SectionIdentifier, Value>
         return nil
     }
 
-    private func itemHashes(sections: [Section<SectionIdentifier, Value>]) -> [SectionHash] {
+    private func itemHashes(sections: [SectionType]) -> [SectionHash] {
         sections.map { (AnyHashable($0.id), $0.items.map { $0.hashValue }) }
     }
 
-    private func applyInsertion(requestIndex request: InsertionRequestIndex, sections: [Section<SectionIdentifier, Value>]) -> [Section<SectionIdentifier, Value>] {
+    private func applyInsertion(requestIndex request: InsertionRequestIndex, sections: [SectionType]) -> [SectionType] {
         var sections = sections
 
-        let item = indexItemBuilderCache[request] ?? { () -> Item<Value> in
-            let newItem = Item<Value>.inserted(InsertedItemInfo(view: request.view, id: itemInfoIdGenerator()))
+        let item = indexItemBuilderCache[request] ?? { () -> ItemType in
+            let newItem = ItemType.inserted(InsertedItemInfo(embed: request.embed, id: itemInfoIdGenerator()))
             indexItemBuilderCache[request] = newItem
             return newItem
         }()
@@ -197,11 +200,11 @@ public class Inserter<SectionIdentifier, Value>
         return sections
     }
 
-    private func applyInsertion(requestPin request: InsertionRequestPinToItem, sections: [Section<SectionIdentifier, Value>]) -> [Section<SectionIdentifier, Value>] {
+    private func applyInsertion(requestPin request: InsertionRequestPinToItem, sections: [SectionType]) -> [SectionType] {
         var sections = sections
 
-        let item = pinItemBuilderCache[request] ?? { () -> Item<Value> in
-            let newItem = Item<Value>.inserted(InsertedItemInfo(view: request.view, id: itemInfoIdGenerator()))
+        let item = pinItemBuilderCache[request] ?? { () -> ItemType in
+            let newItem = ItemType.inserted(InsertedItemInfo(embed: request.embed, id: itemInfoIdGenerator()))
             pinItemBuilderCache[request] = newItem
             return newItem
         }()
@@ -240,7 +243,7 @@ public class Inserter<SectionIdentifier, Value>
         return sections
     }
 
-    private func indexPathOfPreviousInserted(item: Item<Value>) -> IndexPath? {
+    private func indexPathOfPreviousInserted(item: ItemType) -> IndexPath? {
         guard let previousSectionItemsHashes = previousSectionHashes else { return nil }
         for i in 0 ..< previousSectionItemsHashes.count {
             let previousSectionItemsHash = previousSectionItemsHashes[i]
@@ -254,9 +257,9 @@ public class Inserter<SectionIdentifier, Value>
     /// Reinserts the item by looking at the previous items. This attempt to place it beneath the item it was previously below.
     /// In situations where the previous item(s) above it have been deleted, the inejcted item will bubble up to the top of the section.
     private func reinsertItem(
-        _ item: Item<Value>,
+        _ item: ItemType,
         indexPath: IndexPath,
-        sections: inout [Section<SectionIdentifier, Value>]
+        sections: inout [SectionType]
     ) {
         guard let previousSectionItemsHashes = previousSectionHashes else { return }
         // look at items in same section as index path in previous items
@@ -315,7 +318,7 @@ public class Inserter<SectionIdentifier, Value>
     public struct InsertionRequestPinToItem: Hashable {
         public typealias ItemKindIdentifier = String
 
-        public let view: AnyView
+        public let embed: Embed
         public let itemTargetKindIdentifier: ItemKindIdentifier
         public let offset: Placement
         public let occurrence: Occurrence
@@ -333,8 +336,8 @@ public class Inserter<SectionIdentifier, Value>
             case last
         }
 
-        public init(view: AnyView, itemTargetIdentifier: String, offset: Placement, occurrence: Occurrence) {
-            self.view = view
+        public init(embed: Embed, itemTargetIdentifier: String, offset: Placement, occurrence: Occurrence) {
+            self.embed = embed
             self.itemTargetKindIdentifier = itemTargetIdentifier
             self.offset = offset
             self.occurrence = occurrence
@@ -353,7 +356,7 @@ public class Inserter<SectionIdentifier, Value>
 
     /// Describes a request to insert an item in a list based on an index
     public struct InsertionRequestIndex: Hashable {
-        public let view: AnyView
+        public let embed: Embed
         public let placement: Placement
 
         // Do we want to place the inserted item above or below the target index?
@@ -364,8 +367,8 @@ public class Inserter<SectionIdentifier, Value>
 
         private let identifier: String
 
-        public init(view: AnyView, position: Placement) {
-            self.view = view
+        public init(embed: Embed, position: Placement) {
+            self.embed = embed
             self.placement = position
             self.identifier = UUID().uuidString
         }
@@ -380,14 +383,14 @@ public class Inserter<SectionIdentifier, Value>
     }
 }
 
-public struct Section<SectionIdentifier, Value>: Identifiable, Hashable, Equatable
+public struct Section<SectionIdentifier, Value, Embed>: Identifiable, Hashable, Equatable
     where
     SectionIdentifier: Hashable,
     Value: ItemKindIdentifiable,
     Value: Hashable
 {
     public let id: SectionIdentifier
-    public var items: [Item<Value>]
+    public var items: [Item<Value, Embed>]
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(items)
@@ -397,7 +400,7 @@ public struct Section<SectionIdentifier, Value>: Identifiable, Hashable, Equatab
         lhs.items == rhs.items
     }
 
-    public init(id: SectionIdentifier, items: [Item<Value>]) {
+    public init(id: SectionIdentifier, items: [Item<Value, Embed>]) {
         self.id = id
         self.items = items
     }
@@ -414,31 +417,31 @@ extension Item: Identifiable where Value: Identifiable, Value.ID == String {
     }
 }
 
-public enum Item<Value>: Hashable, ItemKindIdentifiable
+public enum Item<Value, Embed>: Hashable, ItemKindIdentifiable
     where
     Value: Hashable,
     Value: ItemKindIdentifiable
 {
     public var itemKindId: String {
         switch self {
-        case let .inserted(info):
+        case .inserted:
             return "inserted"
         case let .value(value):
             return value.itemKindId
         }
     }
 
-    case inserted(InsertedItemInfo)
+    case inserted(InsertedItemInfo<Embed>)
     case value(Value)
 }
 
-public struct InsertedItemInfo: Hashable, Identifiable {
+public struct InsertedItemInfo<Embed>: Hashable, Identifiable {
     public var id: String
 
-    public let view: AnyView
+    public let embed: Embed
 
-    public init(view: AnyView, id: String) {
-        self.view = view
+    public init(embed: Embed, id: String) {
+        self.embed = embed
         self.id = id
     }
 
@@ -450,10 +453,6 @@ public struct InsertedItemInfo: Hashable, Identifiable {
         lhs.id == rhs.id
     }
 }
-
-// Use this as the SectionIdentifier on ListInserter when no sections are needed
-public typealias SingleSectionInserter<Value> = Inserter<NoSections, Value>
-    where Value: ItemKindIdentifiable, Value: Hashable
 
 public struct NoSections: Hashable {
     public init() {}

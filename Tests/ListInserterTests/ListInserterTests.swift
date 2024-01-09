@@ -4,17 +4,18 @@ import XCTest
 import SwiftUI
 
 final class ListInserterTests: XCTestCase {
-    typealias TestInserter = Inserter<NoSections, BookItem>
+    typealias TestInserter = Inserter<NoSections, BookItem, EmptyView>
+    typealias Item = ListInserter.Item<BookItem, EmptyView>
     
     func testNoSections_inserts_whenOneIndexInserterThreeFromTopActive() throws {
         let injectThreeFromTop = TestInserter.InsertionRequest(
             requestType: .index(
-                .init(view: AnyView(EmptyView()),
+                .init(embed: EmptyView(),
                     position: .top(3))))
         
         let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromTop])
         
-        let items: [Item<BookItem>] = [
+        let items: [Item] = [
             .value(.init(kind: .fantasy("foo1"))),
             .value(.init(kind: .fantasy("foo2"))),
             .value(.init(kind: .fantasy("foo3"))),
@@ -35,12 +36,12 @@ final class ListInserterTests: XCTestCase {
     func testNoSections_inserts_whenOneIndexInserterThreeFromBottomActive() throws {
         let injectThreeFromBottom = TestInserter.InsertionRequest(
             requestType: .index(
-                .init(view: AnyView(EmptyView()),
+                .init(embed: EmptyView(),
                     position: .bottom(3))))
         
         let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromBottom])
         
-        let items: [Item<BookItem>] = [
+        let items: [Item] = [
             .value(.init(kind: .fantasy("foo1"))),
             .value(.init(kind: .fantasy("foo2"))),
             .value(.init(kind: .fantasy("foo3"))),

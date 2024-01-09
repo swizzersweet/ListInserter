@@ -2,7 +2,10 @@ import SwiftUI
 import ListInserter
 
 struct SwiftUIListNoSections: View {
-   
+    
+    typealias Inserter = ListInserter.Inserter<NoSections, BookItem, PromotionalView>
+    typealias Item = ListInserter.Item<BookItem, PromotionalView>
+    
     struct BookItem: Hashable, Identifiable, ItemKindIdentifiable {
         
         enum Kind: Hashable {
@@ -23,7 +26,7 @@ struct SwiftUIListNoSections: View {
     
     class Model: ObservableObject {
         private var rawEntries = [BookItem]()
-        @Published var entries = [ListInserter.Item<BookItem>]()
+        @Published var entries = [Item]()
                
         @Published var isInserterFromTopOn: Bool = true {
             didSet {
@@ -36,18 +39,18 @@ struct SwiftUIListNoSections: View {
             }
         }
         
-        private var listInserter: Inserter<NoSections, BookItem>!
+        private var listInserter: Inserter!
         
         init() {
-            let injectThreeFromTop = Inserter<NoSections, SwiftUIListNoSections.BookItem>.InsertionRequest(requestType: .index(.init(view: AnyView(PromotionalView(text: "3 from top", colors: (.blue, .green))), position: .top(3)))) { [weak self] in
+            let injectThreeFromTop = Inserter.InsertionRequest(requestType: .index(.init(embed: PromotionalView(text: "3 from top", colors: (.blue, .green)), position: .top(3)))) { [weak self] in
                 self?.isInserterFromTopOn ?? false
             }
             
-            let injectBelowHorror = Inserter<NoSections, SwiftUIListNoSections.BookItem>.InsertionRequest(requestType: .pinToItem(.init(view: AnyView(PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red))), itemTargetIdentifier: "horror", offset: .below(2), occurrence: .last))) { [weak self] in
+            let injectBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red)), itemTargetIdentifier: "horror", offset: .below(2), occurrence: .last))) { [weak self] in
                 self?.isInserterAfterTypeOn ?? false
             }
             
-            listInserter = Inserter<NoSections, BookItem>(itemInsertionRequests: [injectThreeFromTop, injectBelowHorror], shouldInsertItems: {
+            listInserter = Inserter(itemInsertionRequests: [injectThreeFromTop, injectBelowHorror], shouldInsertItems: {
                 return true
             })
             
@@ -69,11 +72,11 @@ struct SwiftUIListNoSections: View {
         }
         
         func deleteItem(_ indexSet: IndexSet) {
-            entries.remove(atOffsets: indexSet)
+//            entries.remove(atOffsets: indexSet)
         }
         
         private func applyInsertions() {
-            let entries: [ListInserter.Item<BookItem>] = self.rawEntries.map { .value($0) }
+            let entries: [Item] = self.rawEntries.map { .value($0) }
             Task { @MainActor in
                 self.entries = listInserter.insert(into: entries)
             }
@@ -102,7 +105,7 @@ struct SwiftUIListNoSections: View {
                     
                     switch entry {
                     case let .inserted(insertedItemInfo):
-                        insertedItemInfo.view
+                        insertedItemInfo.embed
                     case let .value(value):
                         switch value.kind {
                         case let .fantasy(text):
@@ -114,7 +117,7 @@ struct SwiftUIListNoSections: View {
                         }
                     }
                 }
-                .onDelete(perform: model.deleteItem)
+//                .onDelete(perform: model.deleteItem)
             }
         }
     }
