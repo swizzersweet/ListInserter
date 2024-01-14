@@ -22,12 +22,13 @@ final class ListInserterTests: XCTestCase {
             .value(.init(kind: .fantasy("foo4")))
         ]
         
-        let expectedItemKindsAfterInsertion = [
-            "fantasy",
-            "fantasy",
-            "fantasy",
-            "inserted",
-            "fantasy"]
+        let expectedItemKindsAfterInsertion: [ItemKind] = [
+            .value("fantasy"),
+            .value("fantasy"),
+            .value("fantasy"),
+            .inserted,
+            .value("fantasy"),
+        ]
         
         let itemsWithInsertions = listInserter.insert(into: items)
         XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)
@@ -48,12 +49,13 @@ final class ListInserterTests: XCTestCase {
             .value(.init(kind: .fantasy("foo4")))
         ]
         
-        let expectedItemKindsAfterInsertion = [
-            "fantasy",
-            "inserted",
-            "fantasy",
-            "fantasy",
-            "fantasy"]
+        let expectedItemKindsAfterInsertion: [ItemKind] = [
+            .value("fantasy"),
+            .inserted,
+            .value("fantasy"),
+            .value("fantasy"),
+            .value("fantasy"),
+        ]
         
         let itemsWithInsertions = listInserter.insert(into: items)
         XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)

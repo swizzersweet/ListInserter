@@ -1,6 +1,6 @@
 import SwiftUI
 
-public typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
+private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
 
 /// Used to insert items in sectioned data provided requests which describe what to insert, and where to insert the item.
 public class Inserter<SectionIdentifier, Value, Embed>
@@ -35,7 +35,7 @@ public class Inserter<SectionIdentifier, Value, Embed>
         shouldInsertItems: @escaping () -> Bool = { true },
         itemInfoIdGenerator: @escaping () -> String = { UUID().uuidString }
     )
-        where SectionIdentifier == Int
+//        where SectionIdentifier == Int
     {
         self.insertionRequests = insertionRequests
         self.shouldInsertItems = shouldInsertItems
@@ -219,11 +219,18 @@ public class Inserter<SectionIdentifier, Value, Embed>
              The inserted item will always be in the same section as the target item's section.
              */
             let requestItemKindIdentifier = request.itemTargetKindIdentifier
-
+            
             switch request.occurrence {
             case .first:
                 for i in 0 ..< sections.count {
-                    if let pinTargetItemIndex = sections[i].items.firstIndex(where: { $0.itemKindId == requestItemKindIdentifier }) {
+                    if let pinTargetItemIndex = sections[i].items.firstIndex(where: { item in
+                        switch item.itemKindId {
+                        case .inserted:
+                            return false
+                        case let .value(valueKind):
+                            return valueKind == requestItemKindIdentifier
+                        }
+                    }) {
                         let insertionIndex = calculatePinnedIndex(proposedTargetIndex: pinTargetItemIndex, offset: request.offset, itemCount: sections[i].items.count)
                         sections[i].items.insert(item, at: insertionIndex)
                         break
@@ -231,7 +238,14 @@ public class Inserter<SectionIdentifier, Value, Embed>
                 }
             case .last:
                 for i in (0 ..< sections.count).reversed() {
-                    if let pinTargetItemIndex = sections[i].items.lastIndex(where: { $0.itemKindId == requestItemKindIdentifier }) {
+                    if let pinTargetItemIndex = sections[i].items.lastIndex(where: { item in
+                        switch item.itemKindId {
+                        case .inserted:
+                            return false
+                        case let .value(valueKind):
+                            return valueKind == requestItemKindIdentifier
+                        }
+                    }) {
                         let insertionIndex = calculatePinnedIndex(proposedTargetIndex: pinTargetItemIndex, offset: request.offset, itemCount: sections[i].items.count)
                         sections[i].items.insert(item, at: insertionIndex)
                         break
@@ -422,12 +436,19 @@ public enum Item<Value, Embed>: Hashable, ItemKindIdentifiable
     Value: Hashable,
     Value: ItemKindIdentifiable
 {
+    
+    public var itemKindId: ItemKind {
+        switch self {
+        case .inserted:
+            re
+        }
+    }
     public var itemKindId: String {
         switch self {
         case .inserted:
-            return "inserted"
+            return ItemKind.inserted
         case let .value(value):
-            return value.itemKindId
+            return value.
         }
     }
 
@@ -458,6 +479,15 @@ public struct NoSections: Hashable {
     public init() {}
 }
 
-public protocol ItemKindIdentifiable {
-    var itemKindId: String { get }
+public protocol ItemKindIdentifiable<ValueIdentifier> {
+    associatedtype ValueIdentifier where ValueIdentifier: Equatable
+    
+    var itemKindId: ItemKind<ValueIdentifier> { get }
+}
+
+public enum ItemKind<ValueIdentifier>: Equatable
+where ValueIdentifier: Equatable
+{
+    case inserted
+    case value(ValueIdentifier)
 }

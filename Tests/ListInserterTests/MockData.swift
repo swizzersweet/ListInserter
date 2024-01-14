@@ -8,10 +8,10 @@ struct BookItem: Hashable, Identifiable, ItemKindIdentifiable {
         case horror(String, Int)
     }
     
-    var itemKindId: String {
+    var itemKindId: ItemKind {
         switch kind {
-        case .fantasy: return "fantasy"
-        case .horror: return "horror"
+        case .fantasy: return .value("fantasy")
+        case .horror: return .value("horror")
         }
     }
     
