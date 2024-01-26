@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
+// private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
 
 /// Used to insert items in sectioned data provided requests which describe what to insert, and where to insert the item.
 public class Inserter<S: Sectionable>
@@ -17,6 +17,7 @@ public class Inserter<S: Sectionable>
 //    public typealias ItemType = Item<Value, Embed>
     public typealias SectionType = S
     public typealias ItemType = Item<S.Value, S.Embed>
+    private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
     
     private var previousSectionHashes: [SectionHash]?
     private let insertionRequests: [InsertionRequest]
@@ -234,8 +235,7 @@ public class Inserter<S: Sectionable>
                         case .inserted:
                             return false
                         case let .value(valueKind):
-                            let x = valueKind
-                            return valueKind == requestItemKindIdentifier
+                            return valueKind.hashValue == requestItemKindIdentifier.hashValue
                         }
                     }) {
                         let insertionIndex = calculatePinnedIndex(proposedTargetIndex: pinTargetItemIndex, offset: request.offset, itemCount: sections[i].items.count)
@@ -250,7 +250,7 @@ public class Inserter<S: Sectionable>
                         case .inserted:
                             return false
                         case let .value(valueKind):
-                            return valueKind == requestItemKindIdentifier
+                            return valueKind.hashValue == requestItemKindIdentifier.hashValue
                         }
                     }) {
                         let insertionIndex = calculatePinnedIndex(proposedTargetIndex: pinTargetItemIndex, offset: request.offset, itemCount: sections[i].items.count)
@@ -339,7 +339,7 @@ public class Inserter<S: Sectionable>
     public struct InsertionRequestPinToItem : Hashable {
         public typealias ItemKindIdentifier = Hashable
 
-        public let embed: Embed
+        public let embed: S.Embed
         public let itemTargetKindIdentifier: any Hashable
         public let offset: Placement
         public let occurrence: Occurrence
@@ -357,7 +357,7 @@ public class Inserter<S: Sectionable>
             case last
         }
 
-        public init(embed: Embed, itemTargetIdentifier: any Hashable, offset: Placement, occurrence: Occurrence) {
+        public init(embed: S.Embed, itemTargetIdentifier: any Hashable, offset: Placement, occurrence: Occurrence) {
             self.embed = embed
             self.itemTargetKindIdentifier = itemTargetIdentifier
             self.offset = offset
@@ -377,7 +377,7 @@ public class Inserter<S: Sectionable>
 
     /// Describes a request to insert an item in a list based on an index
     public struct InsertionRequestIndex: Hashable {
-        public let embed: Embed
+        public let embed: S.Embed
         public let placement: Placement
 
         // Do we want to place the inserted item above or below the target index?
@@ -388,7 +388,7 @@ public class Inserter<S: Sectionable>
 
         private let identifier: String
 
-        public init(embed: Embed, position: Placement) {
+        public init(embed: S.Embed, position: Placement) {
             self.embed = embed
             self.placement = position
             self.identifier = UUID().uuidString
