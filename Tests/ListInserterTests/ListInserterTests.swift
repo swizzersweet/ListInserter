@@ -4,8 +4,8 @@ import XCTest
 import SwiftUI
 
 final class ListInserterTests: XCTestCase {
-    typealias TestInserter = Inserter<NoSection<BookItem, EmptyView>>
-    typealias Item = ListInserter.Item<BookItem, EmptyView>
+    typealias TestInserter = Inserter<NoSection<BookItem, String, EmptyView>>
+    typealias Item = ListInserter.Item<BookItem, String, EmptyView>
     
     func testNoSections_inserts_whenOneIndexInserterThreeFromTopActive() throws {
         let injectThreeFromTop = TestInserter.InsertionRequest(
