@@ -394,7 +394,7 @@ public class Inserter<S: Sectionable> {
     }
 }
 
-public protocol Sectionable<SectionIdentifier, Value, Embed>: Identifiable {
+public protocol Sectionable<SectionIdentifier, Value, Embed>: Identifiable, Hashable {
     associatedtype SectionIdentifier where SectionIdentifier: Hashable
     associatedtype Value where Value: ValueKindIdentifiable, Value: Hashable
     associatedtype Embed
@@ -407,12 +407,11 @@ public protocol SectionableInitable: Sectionable {
     init(items: [Item<Value, Embed>])
 }
 
-public struct Section<SectionIdentifier, Value, ItemKindHash, Embed> : Sectionable
+public struct Section<SectionIdentifier, Value, Embed> : Sectionable
 where
 SectionIdentifier: Hashable,
 Value: ValueKindIdentifiable,
-Value: Hashable,
-ItemKindHash: Hashable
+Value: Hashable
 {
     public var id: SectionIdentifier
     

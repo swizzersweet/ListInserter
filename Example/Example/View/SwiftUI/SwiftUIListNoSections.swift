@@ -109,20 +109,6 @@ struct SwiftUIListNoSections: View {
                                 .foregroundColor(.blue)
                         }
                     }
-                    
-//                    switch entry {
-//                    case let .inserted(insertedItemInfo):
-//                        insertedItemInfo.embed
-//                    case let .value(value):
-//                        switch value.kind {
-//                        case let .fantasy(text):
-//                            Text("text only. text: \(text)")
-//                                .foregroundColor(.green)
-//                        case let .horror(text, num):
-//                            Text("text and num. text:\(text) and num:\(num)")
-//                                .foregroundColor(.blue)
-//                        }
-//                    }
                 }
 //                .onDelete(perform: model.deleteItem)
             }
