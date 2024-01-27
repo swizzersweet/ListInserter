@@ -30,7 +30,7 @@ final class ListInserterTests: XCTestCase {
             .value("fantasy"),
         ]
         
-        let itemsWithInsertions = listInserter.insertNoSection(into: items)
+        let itemsWithInsertions = listInserter.insert(into: items)
         
         XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)
     }
@@ -58,7 +58,7 @@ final class ListInserterTests: XCTestCase {
             .value("fantasy"),
         ]
         
-        let itemsWithInsertions = listInserter.insertNoSection(into: items)
+        let itemsWithInsertions = listInserter.insert(into: items)
         XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)
     }
 }

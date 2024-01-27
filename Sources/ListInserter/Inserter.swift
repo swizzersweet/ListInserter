@@ -7,14 +7,7 @@ import SwiftUI
 // private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
 
 /// Used to insert items in sectioned data provided requests which describe what to insert, and where to insert the item.
-public class Inserter<S: Sectionable>
-//    where
-//    SectionIdentifier: Hashable,
-//    Value: Hashable,
-//    Value: ItemKindIdentifiable
-{
-//    public typealias SectionType = Section<SectionIdentifier, Value, Embed>
-//    public typealias ItemType = Item<Value, Embed>
+public class Inserter<S: Sectionable> {
     public typealias SectionType = S
     public typealias ItemType = Item<S.Value, S.Embed>
     private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
@@ -42,27 +35,16 @@ public class Inserter<S: Sectionable>
         shouldInsertItems: @escaping () -> Bool = { true },
         itemInfoIdGenerator: @escaping () -> String = { UUID().uuidString }
     )
-//        where SectionIdentifier == Int
+
     {
         self.insertionRequests = insertionRequests
         self.shouldInsertItems = shouldInsertItems
         self.itemInfoIdGenerator = itemInfoIdGenerator
     }
-
-//    public func insert(into newItems: [ItemType]) -> [ItemType]
-//        where SectionIdentifier == NoSections
-//    {
-//        let section = SectionType(id: NoSections(), items: newItems)
-//        let insertedSections = insert(into: [section])
-//        return insertedSections[0].items
-//    }
     
-    public func insertNoSection(into newItems: [ItemType]) -> [ItemType]
+    public func insert(into newItems: [ItemType]) -> [ItemType]
     where S: SectionableInitable {
-        
         let sections = [S(items: newItems)]
-        
-//        let section = SectionType(id: NoSections(), items: newItems)
         let insertedSections = insert(into: sections)
         return insertedSections[0].items
     }
@@ -458,29 +440,6 @@ Value: Hashable
     }
 }
 
-//public struct Section<SectionIdentifier, Value, Embed>: Identifiable, Hashable, Equatable
-//    where
-//    SectionIdentifier: Hashable,
-//    Value: ItemKindIdentifiable,
-//    Value: Hashable
-//{
-//    public let id: SectionIdentifier
-//    public var items: [Item<Value, Embed>]
-//
-//    public func hash(into hasher: inout Hasher) {
-//        hasher.combine(items)
-//    }
-//
-//    public static func == (lhs: Self, rhs: Self) -> Bool {
-//        lhs.items == rhs.items
-//    }
-//
-//    public init(id: SectionIdentifier, items: [Item<Value, Embed>]) {
-//        self.id = id
-//        self.items = items
-//    }
-//}
-
 extension Item: Identifiable where Value: Identifiable, Value.ID == String {
     public var id: String {
         switch self {
@@ -529,10 +488,6 @@ public struct InsertedItemInfo<Embed>: Hashable, Identifiable {
         lhs.id == rhs.id
     }
 }
-
-//public struct NoSections: Hashable {
-//    public init() {}
-//}
 
 public protocol ItemKindIdentifiable {
     var itemKindId: ItemKind<String> { get }
