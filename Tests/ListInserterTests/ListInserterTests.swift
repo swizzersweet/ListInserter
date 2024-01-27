@@ -4,7 +4,7 @@ import XCTest
 import SwiftUI
 
 final class ListInserterTests: XCTestCase {
-    typealias TestInserter = Inserter<NoSections, BookItem, EmptyView>
+    typealias TestInserter = Inserter<NoSection<BookItem, EmptyView>>
     typealias Item = ListInserter.Item<BookItem, EmptyView>
     
     func testNoSections_inserts_whenOneIndexInserterThreeFromTopActive() throws {
@@ -30,7 +30,10 @@ final class ListInserterTests: XCTestCase {
             .value("fantasy"),
         ]
         
-        let itemsWithInsertions = listInserter.insert(into: items)
+        let itemsWithInsertions = listInserter.insertNoSection(into: items)
+        
+        let x = itemsWithInsertions.map { $0.itemKindId }
+        
         XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)
     }
     

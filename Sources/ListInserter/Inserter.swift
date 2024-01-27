@@ -56,7 +56,17 @@ public class Inserter<S: Sectionable>
 //        let insertedSections = insert(into: [section])
 //        return insertedSections[0].items
 //    }
-
+    
+    public func insertNoSection(into newItems: [ItemType]) -> [ItemType]
+    where S: SectionableInitable {
+        
+        let sections = [S(items: newItems)]
+        
+//        let section = SectionType(id: NoSections(), items: newItems)
+        let insertedSections = insert(into: sections)
+        return insertedSections[0].items
+    }
+    
     public func insert(into newSections: [SectionType]) -> [SectionType] {
         guard shouldInsertItems() else {
             return newSections
@@ -405,12 +415,16 @@ public class Inserter<S: Sectionable>
 }
 
 public protocol Sectionable<SectionIdentifier, Value, Embed>: Identifiable {
-    var id: SectionIdentifier { get }
-    var items: [Item<Value, Embed>] { get set }
-    
     associatedtype SectionIdentifier where SectionIdentifier: Hashable
     associatedtype Value where Value: ItemKindIdentifiable, Value: Hashable
     associatedtype Embed
+    
+    var id: SectionIdentifier { get }
+    var items: [Item<Value, Embed>] { get set }
+}
+
+public protocol SectionableInitable: Sectionable {
+    init(items: [Item<Value,Embed>])
 }
 
 public struct Section<SectionIdentifier, Value, Embed> : Sectionable
@@ -423,13 +437,13 @@ Value: Hashable
     
     public var items: [Item<Value, Embed>]
     
-    public init(sectionIdentiifer: SectionIdentifier, items: [Item<Value,Embed>]) {
-        self.id = sectionIdentiifer
+    public init(sectionIdentifer: SectionIdentifier, items: [Item<Value,Embed>]) {
+        self.id = sectionIdentifer
         self.items = items
     }
 }
 
-public struct NoSection<Value, Embed> : Sectionable
+public struct NoSection<Value, Embed> : SectionableInitable
 where
 Value: ItemKindIdentifiable,
 Value: Hashable
@@ -443,6 +457,7 @@ Value: Hashable
         self.items = items
     }
 }
+
 //public struct Section<SectionIdentifier, Value, Embed>: Identifiable, Hashable, Equatable
 //    where
 //    SectionIdentifier: Hashable,
@@ -529,3 +544,4 @@ public enum ItemKind<ItemHash: Hashable>: Hashable {
     case inserted
     case value(ItemHash)
 }
+

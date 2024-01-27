@@ -1,7 +1,7 @@
 @testable import ListInserter
 import Foundation
 
-struct BookItem: Hashable, Identifiable, ItemKindIdentifiable {
+struct BookItem: Hashable, Identifiable, ItemKindIdentifiable {   
     
     enum Kind: Hashable {
         case fantasy(String)
