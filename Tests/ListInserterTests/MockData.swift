@@ -1,20 +1,13 @@
 @testable import ListInserter
 import Foundation
 
-struct BookItem: Hashable, Identifiable, ItemKindIdentifiable {   
+struct BookItem: Hashable, ValueKindIdentifiable {
     
     enum Kind: Hashable {
         case fantasy(String)
         case horror(String, Int)
     }
-    
-    var itemKindId: ItemKind<String> {
-        switch kind {
-        case .fantasy: return .value("fantasy")
-        case .horror: return .value("horror")
-        }
-    }
-    
-    let id = UUID()
-    let kind: Kind
+        
+    let id = UUID() // allows duplicate entries of the exact same item
+    let valueKind: Kind
 }

@@ -4,12 +4,10 @@
 
 import SwiftUI
 
-// private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
-
 /// Used to insert items in sectioned data provided requests which describe what to insert, and where to insert the item.
 public class Inserter<S: Sectionable> {
     public typealias SectionType = S
-    public typealias ItemType = Item<S.Value, S.ItemKindHash, S.Embed>
+    public typealias ItemType = Item<S.Value, S.Embed>
     private typealias SectionHash = (sectionHash: AnyHashable, itemHashes: [AnyHashable])
     
     private var previousSectionHashes: [SectionHash]?
@@ -396,48 +394,46 @@ public class Inserter<S: Sectionable> {
     }
 }
 
-public protocol Sectionable<SectionIdentifier, Value, ItemKindHash, Embed>: Identifiable {
+public protocol Sectionable<SectionIdentifier, Value, Embed>: Identifiable {
     associatedtype SectionIdentifier where SectionIdentifier: Hashable
-    associatedtype Value where Value: ItemKindIdentifiable<ItemKindHash>, Value: Hashable
+    associatedtype Value where Value: ValueKindIdentifiable, Value: Hashable
     associatedtype Embed
-    associatedtype ItemKindHash where ItemKindHash: Hashable
     
     var id: SectionIdentifier { get }
-    var items: [Item<Value, ItemKindHash, Embed>] { get set }
+    var items: [Item<Value, Embed>] { get set }
 }
 
 public protocol SectionableInitable: Sectionable {
-    init(items: [Item<Value, ItemKindHash, Embed>])
+    init(items: [Item<Value, Embed>])
 }
 
 public struct Section<SectionIdentifier, Value, ItemKindHash, Embed> : Sectionable
 where
 SectionIdentifier: Hashable,
-Value: ItemKindIdentifiable<ItemKindHash>,
+Value: ValueKindIdentifiable,
 Value: Hashable,
 ItemKindHash: Hashable
 {
     public var id: SectionIdentifier
     
-    public var items: [Item<Value, ItemKindHash, Embed>]
+    public var items: [Item<Value, Embed>]
     
-    public init(sectionIdentifer: SectionIdentifier, items: [Item<Value, ItemKindHash, Embed>]) {
+    public init(sectionIdentifer: SectionIdentifier, items: [Item<Value, Embed>]) {
         self.id = sectionIdentifer
         self.items = items
     }
 }
 
-public struct NoSection<Value, ItemKindHash, Embed> : SectionableInitable
+public struct NoSection<Value, Embed> : SectionableInitable
 where
-ItemKindHash: Hashable,
-Value: ItemKindIdentifiable<ItemKindHash>,
+Value: ValueKindIdentifiable,
 Value: Hashable
 {
     public var id: String
     
-    public var items: [Item<Value, ItemKindHash, Embed>]
+    public var items: [Item<Value, Embed>]
     
-    public init(items: [Item<Value, ItemKindHash, Embed>]) {
+    public init(items: [Item<Value, Embed>]) {
         self.id = UUID().uuidString
         self.items = items
     }
@@ -454,19 +450,17 @@ extension Item: Identifiable where Value: Identifiable, Value.ID == String {
     }
 }
 
-public enum Item<Value, ItemKindHash, Embed>: Hashable, ItemKindIdentifiable
+public enum Item<Value, Embed>: Hashable, ItemKindIdentifiable
     where
-    ItemKindHash: Hashable,
     Value: Hashable,
-    Value: ItemKindIdentifiable<ItemKindHash>
+    Value: ValueKindIdentifiable
 {
-    
-    public var itemKindId: ItemKind<ItemKindHash> {
+    public var itemKindId: ItemKind<Value> {
         switch self {
         case .inserted:
             return .inserted
         case let .value(value):
-            return value.itemKindId
+            return .value(value)
         }
     }
 
@@ -493,13 +487,19 @@ public struct InsertedItemInfo<Embed>: Hashable, Identifiable {
     }
 }
 
-public protocol ItemKindIdentifiable<H> {
-    associatedtype H where H: Hashable
+public protocol ItemKindIdentifiable {
+    associatedtype ValueKind where ValueKind: ValueKindIdentifiable
     
-    var itemKindId: ItemKind<H> { get }
+    var itemKindId: ItemKind<ValueKind> { get }
 }
 
-public enum ItemKind<H: Hashable>: Hashable {
+public enum ItemKind<ValueKind: ValueKindIdentifiable>: Hashable {
     case inserted
-    case value(H)
+    case value(ValueKind)
+}
+
+public protocol ValueKindIdentifiable: Hashable {
+    associatedtype H where H: Hashable
+    
+    var valueKind: H { get }
 }
