@@ -2,8 +2,8 @@ import SwiftUI
 import ListInserter
 
 struct SwiftUIListWithSections: View {
-    
-    typealias Inserter = ListInserter.Inserter<String, BookItem, PromotionalView>
+            
+    typealias Inserter = ListInserter.Inserter<ListInserter.Section<String, BookItem, PromotionalView>>
     typealias ListSection = ListInserter.Section<String, BookItem, PromotionalView>
     typealias Item = ListInserter.Item<BookItem, PromotionalView>
        
@@ -11,22 +11,15 @@ struct SwiftUIListWithSections: View {
         let items: [BookItem]
     }
     
-    struct BookItem: Hashable, Identifiable, ItemKindIdentifiable {
+    struct BookItem: Hashable, ValueKindIdentifiable {
         
         enum Kind: Hashable {
             case fantasy(String)
             case horror(String, Int)
         }
-        
-        var itemKindId: String {
-            switch kind {
-            case .fantasy: return "fantasy"
-            case .horror: return "horror"
-            }
-        }
-        
-        let id = UUID()
-        let kind: Kind
+            
+        let id = UUID() // allows duplicate entries of the exact same item
+        let valueKind: Kind
     }
     
     class Model: ObservableObject {
@@ -68,8 +61,7 @@ struct SwiftUIListWithSections: View {
                     let rawEntries: [BookItem] = [BookItem].generateRandom()
                     
                     let itemEntries: [Item] = rawEntries.map { .value($0)}
-
-                    let listSection = ListSection(id: UUID().uuidString, items: itemEntries)
+                    let listSection = ListSection(sectionIdentifer: UUID().uuidString, items: itemEntries)
                     sections.append(listSection)
                 }
 
@@ -108,19 +100,17 @@ struct SwiftUIListWithSections: View {
                     Section(header: Text("Book section: \(section.id)")) {
                         ForEach(section.items, id: \.self) { entry in
                             switch entry {
-                            case let .value(value):
-                                
-                                switch value.kind {
-                                case let .fantasy(text):
-                                    Text("text only. text: \(text)")
-                                        .foregroundColor(.green)
-                                case let .horror(text, num):
-                                    Text("text and num. text:\(text) and num:\(num)")
-                                        .foregroundColor(.blue)
+                            case let .inserted(insertedItemInfo):
+                                insertedItemInfo.embed
+                            case let .value(bookItem):
+                                switch bookItem.valueKind {
+                                    case let .fantasy(text):
+                                        Text("text only. text: \(text)")
+                                            .foregroundColor(.green)
+                                    case let .horror(text, num):
+                                        Text("text and num. text:\(text) and num:\(num)")
+                                            .foregroundColor(.blue)
                                 }
-                                
-                            case let .inserted(injectedItemInfo):
-                                injectedItemInfo.embed
                             }
                         }
                     }
@@ -134,9 +124,9 @@ private extension [SwiftUIListWithSections.BookItem] {
     static func generateRandom(count: Int = 10) -> [Element] {
         return (0..<count).map { index in
             if Bool.random() {
-                return Element(kind: .fantasy("Fantasy book \(Int.random(in: 1..<1_000))"))
+                return Element(valueKind: .fantasy("Fantasy book \(Int.random(in: 1..<1_000))"))
             } else {
-                return Element(kind: .horror("Horror book:", Int.random(in: 100..<1_000)))
+                return Element(valueKind: .horror("Horror book", Int.random(in: 100..<1_000)))
             }
         }
     }

@@ -4,9 +4,9 @@
 
 # What is it?
 
-ListInserter facilitates inserting items into a sectioned or non-sectioned list of items. Although designed with SwiftUI and UIKit via diffable data sources in mind, it can insert any type in a list.
+ListInserter facilitates inserting items into a sectioned or non-sectioned list of items. Although designed with SwiftUI and UIKit via diffable data sources in mind, it can insert into any type in a list.
 
-It is fairly typical for apps to have a list of data they receive from an API endpoint, or a data source such as CoreData. If we then have the requirement that we would like to decorate the existing items with new items, this can involve some tedious boilerplate code that involves ensuring items remain in bounds, adding custom view types for SwiftUI or UIKit, and specific logic for to prevent inserted items from jumping when items are deleted. What we really want, is to be able to describe how we want to insert an item, and for something else to handle that boilerplate. Enter ListInserter.
+It is fairly typical for apps to have a list of data they receive from an API endpoint, or a data source such as CoreData. If we then have the requirement that we would like to decorate the existing items with new items, this can involve some tedious boilerplate code that involves ensuring items remain in bounds, adding custom view types for SwiftUI or UIKit, and specific logic for to prevent inserted items from jumping when items are deleted. What we really want, is to be able to describe how we want to insert an item, and for something else to handle that boilerplate logic. Enter ListInserter.
 
 ## Use case
 
@@ -21,16 +21,16 @@ should become
 To do this, we might define our items as such:
 
 ```swift
-struct BookItem: Hashable, Identifiable {
-    
-    enum Kind: Hashable {
-        case fantasy(String)
-        case horror(String, Int)
+    struct BookItem: Hashable, ValueKindIdentifiable {
+        
+        enum Kind: Hashable {
+            case fantasy(String)
+            case horror(String, Int)
+        }
+            
+        let id = UUID() // allows duplicate entries of the exact same item
+        let valueKind: Kind
     }
-    
-    let id = UUID()
-    let kind: Kind
-}
 ```
 
 To use the ListInserter, we would need to conform to a protocol, and map our items to a wrapper type.
@@ -68,7 +68,8 @@ Which then allows us to apply insertions with a ListInserter (using a NoSections
 ```swift
 struct PromotionalView: View { ...code... }
 
-typealias MyInserter = Inserter<NoSections, BookItem, PromotionalView>
+typealias Inserter = ListInserter.Inserter<NoSection<BookItem, PromotionalView>>
+typealias Item = ListInserter.Item<BookItem, PromotionalView>
 
 let injectThreeFromTop = TestInserter.InsertionRequest(
     requestType: .index(
@@ -81,6 +82,8 @@ let itemsWithInsertions = listInserter.insert(into: items) // Feed into UI
 ```
 
 With a few lines of code, we are able to describe how we want to insert an item, have the inserter insert the item, and render out the items.
+
+See the included example app for more details.
 
 # Features
 - Ability to insert items in non-sectioned or sectioned data.
