@@ -498,12 +498,12 @@ public enum Item<Value, Embed>: Hashable, ItemKindIdentifiable
     Value: ItemKindIdentifiable
 {
     
-    public var itemKindId: ItemKind<Value> {
+    public var itemKindId: ItemKind<String> {
         switch self {
         case .inserted:
             return .inserted
         case let .value(value):
-            return .value(value)
+            return value.itemKindId
         }
     }
 
@@ -534,10 +534,8 @@ public struct InsertedItemInfo<Embed>: Hashable, Identifiable {
 //    public init() {}
 //}
 
-public protocol ItemKindIdentifiable<ValueIdentifier> {
-    associatedtype ValueIdentifier where ValueIdentifier: Hashable
-    
-    var itemKindId: ItemKind<ValueIdentifier> { get }
+public protocol ItemKindIdentifiable {
+    var itemKindId: ItemKind<String> { get }
 }
 
 public enum ItemKind<ItemHash: Hashable>: Hashable {
