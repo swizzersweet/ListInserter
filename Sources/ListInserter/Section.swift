@@ -53,7 +53,7 @@ Value: Hashable
     public var items: [Item<Value, Embed>]
     
     public init(items: [Item<Value, Embed>]) {
-        self.id = UUID().uuidString
+        self.id = "SingleInternalSection"
         self.items = items
     }
 }
