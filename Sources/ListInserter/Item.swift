@@ -1,5 +1,6 @@
 import Foundation
 
+/// Represents an item, generic over the `Value`, and it's `Embed` for inserted values.
 public enum Item<Value, Embed>: Hashable, ItemKindIdentifiable
     where
     Value: Hashable,
@@ -29,6 +30,7 @@ extension Item: Identifiable where Value: Identifiable, Value.ID == String {
     }
 }
 
+/// Represents the inserted item information, generic over the `Embed` type.
 public struct InsertedItemInfo<Embed>: Hashable, Identifiable {
     public var id: String
 

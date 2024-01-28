@@ -11,11 +11,11 @@ public protocol ItemKindIdentifiable {
     var itemKindId: ItemKind<ValueKind> { get }
 }
 
-/// Protocol that represents a value's kind.
+/// Protocol that represents a value's kind, with associated type `Hash`, that represents the type that will be used as the `Hashable` type for the value. 
 public protocol ValueKindIdentifiable: Hashable {
-    associatedtype H where H: Hashable
+    associatedtype Hash where Hash: Hashable
     
-    var valueKind: H { get }
+    var valueKind: Hash { get }
 }
 
 /// Represents the _kinds_ of items in the `Inserter`.

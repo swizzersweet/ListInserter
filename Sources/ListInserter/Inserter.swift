@@ -1,7 +1,7 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
-
+// We only use SwiftUI for `SwiftUI.IndexPath`
 import SwiftUI
 
 /// Used to insert items in sectioned data provided requests which describe what to insert, and where to insert the item.
