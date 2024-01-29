@@ -54,7 +54,7 @@ public class Inserter<S: Sectionable> {
     /// - Parameters:
     ///     - into: The list of uninserted sections.
     ///     - forceReinsert: An optional bool that will force a reinserion and discard previous internal item hash data.
-    public func insert(into newSections: [SectionType], forceReinsert: Bool) -> [SectionType] {
+    public func insert(into newSections: [SectionType], forceReinsert: Bool = false) -> [SectionType] {
         guard shouldInsertItems() else {
             return newSections
                 .map { section in
