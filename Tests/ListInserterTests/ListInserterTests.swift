@@ -15,11 +15,11 @@ final class ListInserterTests: XCTestCase {
         
         let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromTop])
         
-        let bookItems: [BookItem] = [
-            .init(valueKind: .fantasy("foo1")),
-            .init(valueKind: .fantasy("foo2")),
-            .init(valueKind: .fantasy("foo3")),
-            .init(valueKind: .fantasy("foo4"))
+        let bookItems: [BookItem] = [            
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo2")),
+            .init(.fantasy("foo3")),
+            .init(.fantasy("foo4"))
         ]
         
         let items: [Item] = bookItems.map { Item.value($0) }
@@ -42,10 +42,10 @@ final class ListInserterTests: XCTestCase {
         let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromBottom])
         
         let bookItems: [BookItem] = [
-            .init(valueKind: .fantasy("foo1")),
-            .init(valueKind: .fantasy("foo2")),
-            .init(valueKind: .fantasy("foo3")),
-            .init(valueKind: .fantasy("foo4"))
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo2")),
+            .init(.fantasy("foo3")),
+            .init(.fantasy("foo4"))
         ]
         
         let items: [Item] = bookItems.map { Item.value($0) }
@@ -67,10 +67,10 @@ final class ListInserterTests: XCTestCase {
         let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromTop])
         
         var bookItems: [BookItem] = [
-            .init(valueKind: .fantasy("foo1")),
-            .init(valueKind: .fantasy("foo2")),
-            .init(valueKind: .fantasy("foo3")),
-            .init(valueKind: .fantasy("foo4"))
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo2")),
+            .init(.fantasy("foo3")),
+            .init(.fantasy("foo4"))
         ]
         
         let items: [Item] = bookItems.map { Item.value($0) }
@@ -105,10 +105,10 @@ final class ListInserterTests: XCTestCase {
         let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromTop])
         
         var bookItems: [BookItem] = [
-            .init(valueKind: .fantasy("foo1")),
-            .init(valueKind: .fantasy("foo2")),
-            .init(valueKind: .fantasy("foo3")),
-            .init(valueKind: .fantasy("foo4"))
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo2")),
+            .init(.fantasy("foo3")),
+            .init(.fantasy("foo4"))
         ]
         
         let items: [Item] = bookItems.map { Item.value($0) }
@@ -125,10 +125,10 @@ final class ListInserterTests: XCTestCase {
         bookItems.removeAll()
         
         bookItems.append(contentsOf: [
-            .init(valueKind: .fantasy("foo1")),
-            .init(valueKind: .fantasy("foo2")),
-            .init(valueKind: .fantasy("foo3")),
-            .init(valueKind: .fantasy("foo4")),
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo2")),
+            .init(.fantasy("foo3")),
+            .init(.fantasy("foo4")),
         ])
         
         let items2: [Item] = bookItems.map { Item.value($0) }
