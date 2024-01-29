@@ -28,7 +28,7 @@ struct SwiftUIListNoSections: View {
                 self?.isInserterFromTopOn ?? false
             }
             
-            let injectBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red)), itemTargetIdentifier: "horror", offset: .below(2), occurrence: .last))) { [weak self] in
+            let injectBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red)), itemTargetIdentifier: BookItem.Kind.horror, offset: .below(2), occurrence: .last))) { [weak self] in
                 self?.isInserterAfterTypeOn ?? false
             }
             
@@ -83,7 +83,7 @@ struct SwiftUIListNoSections: View {
             }
             
             List {
-                ForEach(model.entries, id: \.self) { entry in                    
+                ForEach(model.entries, id: \.self) { entry in
                     switch entry {
                     case let .inserted(insertedItemInfo):
                         insertedItemInfo.embed

@@ -25,7 +25,8 @@ struct BookItem: Hashable, ValueKindIdentifiable {
     let details: Details
     
     init(_ details: Details) {
-        (self.details, self.valueKind) = (details, Kind(details))
+        self.details = details
+        self.valueKind = Kind(details)
     }
 }
 

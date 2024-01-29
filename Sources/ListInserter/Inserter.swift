@@ -251,8 +251,8 @@ public class Inserter<S: Sectionable> {
                         switch item.itemKindId {
                         case .inserted:
                             return false
-                        case let .value(valueKind):
-                            return valueKind.hashValue == requestItemKindIdentifier.hashValue
+                        case let .value(value):
+                            return value.valueKind.hashValue == requestItemKindIdentifier.hashValue
                         }
                     }) {
                         let insertionIndex = calculatePinnedIndex(proposedTargetIndex: pinTargetItemIndex, offset: request.offset, itemCount: sections[i].items.count)
