@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		049E6AB72B3DC9C3004E768C /* SwiftUIListWithSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E6AB62B3DC9C3004E768C /* SwiftUIListWithSections.swift */; };
 		049E6ABA2B3F293C004E768C /* PlainListWithSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E6AB92B3F293C004E768C /* PlainListWithSections.swift */; };
+		04A2E3D32B67438800CDBE2E /* BookItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A2E3D22B67438800CDBE2E /* BookItem.swift */; };
 		04C3A4032B371BEB00A787EA /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C3A4022B371BEB00A787EA /* ExampleApp.swift */; };
 		04C3A4052B371BEB00A787EA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C3A4042B371BEB00A787EA /* ContentView.swift */; };
 		04C3A4072B371BEC00A787EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04C3A4062B371BEC00A787EA /* Assets.xcassets */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		049E6AB62B3DC9C3004E768C /* SwiftUIListWithSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIListWithSections.swift; sourceTree = "<group>"; };
 		049E6AB92B3F293C004E768C /* PlainListWithSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainListWithSections.swift; sourceTree = "<group>"; };
+		04A2E3D22B67438800CDBE2E /* BookItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookItem.swift; sourceTree = "<group>"; };
 		04C3A3FF2B371BEB00A787EA /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04C3A4022B371BEB00A787EA /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		04C3A4042B371BEB00A787EA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -81,17 +83,9 @@
 			isa = PBXGroup;
 			children = (
 				04C3A41B2B386FFB00A787EA /* SwiftUI */,
-				04C3A41A2B386FF300A787EA /* UIKit */,
 				04C3A4042B371BEB00A787EA /* ContentView.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		04C3A41A2B386FF300A787EA /* UIKit */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = UIKit;
 			sourceTree = "<group>";
 		};
 		04C3A41B2B386FFB00A787EA /* SwiftUI */ = {
@@ -101,6 +95,7 @@
 				049E6AB62B3DC9C3004E768C /* SwiftUIListWithSections.swift */,
 				04C3A4132B3720AA00A787EA /* PromotionalView.swift */,
 				049E6AB92B3F293C004E768C /* PlainListWithSections.swift */,
+				04A2E3D22B67438800CDBE2E /* BookItem.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -184,6 +179,7 @@
 				04C3A4052B371BEB00A787EA /* ContentView.swift in Sources */,
 				049E6AB72B3DC9C3004E768C /* SwiftUIListWithSections.swift in Sources */,
 				049E6ABA2B3F293C004E768C /* PlainListWithSections.swift in Sources */,
+				04A2E3D32B67438800CDBE2E /* BookItem.swift in Sources */,
 				04C3A4142B3720AA00A787EA /* PromotionalView.swift in Sources */,
 				04C3A4162B3721E700A787EA /* SwiftUIListNoSections.swift in Sources */,
 				04C3A4032B371BEB00A787EA /* ExampleApp.swift in Sources */,

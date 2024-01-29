@@ -11,17 +11,6 @@ struct SwiftUIListWithSections: View {
         let items: [BookItem]
     }
     
-    struct BookItem: Hashable, ValueKindIdentifiable {
-        
-        enum Kind: Hashable {
-            case fantasy(String)
-            case horror(String, Int)
-        }
-            
-        let id = UUID() // allows duplicate entries of the exact same item
-        let valueKind: Kind
-    }
-    
     class Model: ObservableObject {
         @Published var sections = [ListSection]()
         
@@ -44,7 +33,7 @@ struct SwiftUIListWithSections: View {
                 self?.isInserterFromTopOn ?? false
             }
             
-            let injectTwoBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red)), itemTargetIdentifier: "horror", offset: .below(2), occurrence: .last))) { [weak self] in
+            let injectTwoBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last horror", colors: (.orange, .red)), itemTargetIdentifier: BookItem.Kind.horror, offset: .below(2), occurrence: .last))) { [weak self] in
                 self?.isInserterAfterTypeOn ?? false
             }
             
@@ -103,30 +92,18 @@ struct SwiftUIListWithSections: View {
                             case let .inserted(insertedItemInfo):
                                 insertedItemInfo.embed
                             case let .value(bookItem):
-                                switch bookItem.valueKind {
-                                    case let .fantasy(text):
-                                        Text("text only. text: \(text)")
-                                            .foregroundColor(.green)
-                                    case let .horror(text, num):
-                                        Text("text and num. text:\(text) and num:\(num)")
-                                            .foregroundColor(.blue)
+                                switch bookItem.details {
+                                case let .fantasy(text):
+                                    Text("text only. text: \(text)")
+                                        .foregroundColor(.green)
+                                case let .horror(text, num):
+                                    Text("text and num. text:\(text) and num:\(num)")
+                                        .foregroundColor(.blue)
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-private extension [SwiftUIListWithSections.BookItem] {
-    static func generateRandom(count: Int = 10) -> [Element] {
-        return (0..<count).map { index in
-            if Bool.random() {
-                return Element(valueKind: .fantasy("Fantasy book \(Int.random(in: 1..<1_000))"))
-            } else {
-                return Element(valueKind: .horror("Horror book", Int.random(in: 100..<1_000)))
             }
         }
     }

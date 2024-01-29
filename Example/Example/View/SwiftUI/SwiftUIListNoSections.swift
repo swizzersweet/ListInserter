@@ -6,17 +6,6 @@ struct SwiftUIListNoSections: View {
     typealias Inserter = ListInserter.Inserter<NoSection<BookItem, PromotionalView>>
     typealias Item = ListInserter.Item<BookItem, PromotionalView>
     
-    struct BookItem: Hashable, ValueKindIdentifiable {
-        
-        enum Kind: Hashable {
-            case fantasy(String)
-            case horror(String, Int)
-        }
-            
-        let id = UUID() // allows duplicate entries of the exact same item
-        let valueKind: Kind
-    }
-    
     class Model: ObservableObject {
         private var rawEntries = [BookItem]()
         @Published var entries = [Item]()
@@ -39,7 +28,7 @@ struct SwiftUIListNoSections: View {
                 self?.isInserterFromTopOn ?? false
             }
             
-            let injectBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red)), itemTargetIdentifier: "horror", offset: .below(2), occurrence: .last))) { [weak self] in
+            let injectBelowHorror = Inserter.InsertionRequest(requestType: .pinToItem(.init(embed: PromotionalView(text: "2 below last textAndNumber", colors: (.orange, .red)), itemTargetIdentifier: BookItem.Kind.horror, offset: .below(2), occurrence: .last))) { [weak self] in
                 self?.isInserterAfterTypeOn ?? false
             }
             
@@ -95,12 +84,11 @@ struct SwiftUIListNoSections: View {
             
             List {
                 ForEach(model.entries, id: \.self) { entry in
-                    
                     switch entry {
                     case let .inserted(insertedItemInfo):
                         insertedItemInfo.embed
-                    case let .value(value):
-                        switch value.valueKind {
+                    case let .value(bookItem):
+                        switch bookItem.details {
                         case let .fantasy(text):
                             Text("text only. text: \(text)")
                                 .foregroundColor(.green)
@@ -111,18 +99,6 @@ struct SwiftUIListNoSections: View {
                     }
                 }
 //                .onDelete(perform: model.deleteItem)
-            }
-        }
-    }
-}
-
-private extension [SwiftUIListNoSections.BookItem] {
-    static func generateRandom(count: Int = 10) -> [Element] {
-        return (0..<count).map { index in
-            if Bool.random() {
-                return Element(valueKind: .fantasy("Lorem text: \(index)"))
-            } else {
-                return Element(valueKind: .horror("Lorem text:", Int.random(in: 100..<1000)))
             }
         }
     }

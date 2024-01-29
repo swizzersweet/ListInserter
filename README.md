@@ -21,32 +21,54 @@ should become
 To do this, we might define our items as such:
 
 ```swift
-    struct BookItem: Hashable, ValueKindIdentifiable {
-        
-        enum Kind: Hashable {
-            case fantasy(String)
-            case horror(String, Int)
-        }
-            
-        let id = UUID() // allows duplicate entries of the exact same item
-        let valueKind: Kind
+struct BookItem: Hashable, ValueKindIdentifiable {
+    
+    enum Details: Hashable {
+        case fantasy(String)
+        case horror(String, Int)
     }
+    
+    enum Kind: Hashable {
+        case fantasy
+        case horror
+    }
+        
+    let id = UUID() // allows duplicate entries of the exact same item
+    let valueKind: Kind
+    let details: Details
+    
+    init(_ details: Details) {
+        self.details = details
+        self.valueKind = Kind(details)
+    }
+}
 ```
 
 To use the ListInserter, we would need to conform to a protocol, and map our items to a wrapper type.
 
 ```swift
 // ListInserter compatible item
-    struct BookItem: Hashable, ValueKindIdentifiable {
-        
-        enum Kind: Hashable {
-            case fantasy(String)
-            case horror(String, Int)
-        }
-            
-        let id = UUID() // allows duplicate entries of the exact same item
-        let valueKind: Kind
+struct BookItem: Hashable, ValueKindIdentifiable {
+    
+    enum Details: Hashable {
+        case fantasy(String)
+        case horror(String, Int)
     }
+    
+    enum Kind: Hashable {
+        case fantasy
+        case horror
+    }
+        
+    let id = UUID() // allows duplicate entries of the exact same item
+    let valueKind: Kind
+    let details: Details
+    
+    init(_ details: Details) {
+        self.details = details
+        self.valueKind = Kind(details)
+    }
+}
 ```
 
 And instead of an array of `BookItem`s, we need to convert our `[BookItem]` to `[Item<BookItem>]`.

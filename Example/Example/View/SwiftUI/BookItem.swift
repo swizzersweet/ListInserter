@@ -1,5 +1,12 @@
-@testable import ListInserter
+//
+//  BookItem.swift
+//  Example
+//
+//  Created by Jonathan Menard on 2024-01-28.
+//
+
 import Foundation
+import ListInserter
 
 struct BookItem: Hashable, ValueKindIdentifiable {
     
@@ -18,7 +25,8 @@ struct BookItem: Hashable, ValueKindIdentifiable {
     let details: Details
     
     init(_ details: Details) {
-        (self.details, self.valueKind) = (details, Kind(details))
+        self.details = details
+        self.valueKind = Kind(details)
     }
 }
 
@@ -29,6 +37,18 @@ extension BookItem.Kind {
             self = .fantasy
         case .horror:
             self = .horror
+        }
+    }
+}
+
+extension [BookItem] {
+    static func generateRandom(count: Int = 10) -> [Element] {
+        return (0..<count).map { index in
+            if Bool.random() {
+                return Element(.fantasy("Fantasy book \(Int.random(in: 1..<1_000))"))
+            } else {
+                return Element(.horror("Horror book", Int.random(in: 100..<1_000)))
+            }
         }
     }
 }

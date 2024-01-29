@@ -39,14 +39,22 @@ public class Inserter<S: Sectionable> {
         self.itemInfoIdGenerator = itemInfoIdGenerator
     }
     
-    public func insert(into newItems: [ItemType]) -> [ItemType]
+    /// Insert items into [Item<Value, Embed>]
+    /// - Parameters:
+    ///     - into: The list of uninserted items.
+    ///     - forceReinsert: An optional bool that will force a reinserion and discard previous internal item hash data.
+    public func insert(into newItems: [ItemType], forceReinsert: Bool = false) -> [ItemType]
     where S: SectionableInitable {
         let sections = [S(items: newItems)]
-        let insertedSections = insert(into: sections)
+        let insertedSections = insert(into: sections, forceReinsert: forceReinsert)
         return insertedSections[0].items
     }
     
-    public func insert(into newSections: [SectionType]) -> [SectionType] {
+    /// Insert items into [Item<Value, Embed>]
+    /// - Parameters:
+    ///     - into: The list of uninserted sections.
+    ///     - forceReinsert: An optional bool that will force a reinserion and discard previous internal item hash data.
+    public func insert(into newSections: [SectionType], forceReinsert: Bool = false) -> [SectionType] {
         guard shouldInsertItems() else {
             return newSections
                 .map { section in
@@ -60,11 +68,16 @@ public class Inserter<S: Sectionable> {
         }
 
         let isNewDataSet: Bool = {
+            if forceReinsert {
+                return true
+            }
             // If we have none of the previous section hashes, we assume it's new data
             guard let previousItemsHashes = previousSectionHashes else { return true }
             let newSectionHashesSet = Set(itemHashes(sections: newSections).map { $0.sectionHash })
             let previousSectionHashesSet = Set(previousItemsHashes.map { $0.sectionHash })
-            return previousSectionHashesSet.isDisjoint(with: newSectionHashesSet)
+            let isDisjointSectionHash = previousSectionHashesSet.isDisjoint(with: newSectionHashesSet)
+            
+            return isDisjointSectionHash
         }()
 
         if isNewDataSet {
@@ -238,8 +251,8 @@ public class Inserter<S: Sectionable> {
                         switch item.itemKindId {
                         case .inserted:
                             return false
-                        case let .value(valueKind):
-                            return valueKind.hashValue == requestItemKindIdentifier.hashValue
+                        case let .value(value):
+                            return value.valueKind.hashValue == requestItemKindIdentifier.hashValue
                         }
                     }) {
                         let insertionIndex = calculatePinnedIndex(proposedTargetIndex: pinTargetItemIndex, offset: request.offset, itemCount: sections[i].items.count)
