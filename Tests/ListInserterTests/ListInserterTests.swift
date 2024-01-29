@@ -58,7 +58,33 @@ final class ListInserterTests: XCTestCase {
         XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)
     }
     
-    func testNoSectionsInsert_shouldPreservePosition_whenItemDeleted() throws {
+    func testNoSections_inserts_whenOneIndexInserterThreeFromTopActiveWithDuplicateEntries() throws {
+        let injectThreeFromTop = TestInserter.InsertionRequest(
+            requestType: .index(
+                .init(embed: EmptyView(),
+                    position: .top(3))))
+        
+        let listInserter = TestInserter(itemInsertionRequests: [injectThreeFromTop])
+        
+        let bookItems: [BookItem] = [
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo1")),
+            .init(.fantasy("foo1"))
+        ]
+        
+        let items: [Item] = bookItems.map { Item.value($0) }
+        
+        var expectedItemKindsAfterInsertion: [ItemKind<BookItem>] = bookItems
+            .map { .value($0) }
+        expectedItemKindsAfterInsertion.insert(.inserted, at: 3)
+        
+        let itemsWithInsertions = listInserter.insert(into: items)
+        
+        XCTAssertEqual(itemsWithInsertions.map { $0.itemKindId }, expectedItemKindsAfterInsertion)
+    }
+    
+    func testNoSections_whenItemDeletedAbove_thenMaintainsPosition() throws {
         let injectThreeFromTop = TestInserter.InsertionRequest(
             requestType: .index(
                 .init(embed: EmptyView(),
